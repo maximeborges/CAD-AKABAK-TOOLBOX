@@ -48,7 +48,7 @@ export function getSettingsPanelHtml() {
             </div>
 
             <div class="space-y-4 mt-4 pb-2">
-              <div><label class="block mb-2">Path to gmsh.exe</label><div class="flex space-x-2"><input type="text" id="setting-gmsh" class="form-input flex-grow"><button data-path-for="setting-gmsh" data-dialog="file-exe" class="path-select-btn action-btn">Browse...</button></div></div>
+              <div><label class="block mb-2">Path to ${window.electronAPI?.platform === 'win32' ? 'gmsh.exe' : 'gmsh'}</label><div class="flex space-x-2"><input type="text" id="setting-gmsh" class="form-input flex-grow"><button data-path-for="setting-gmsh" data-dialog="file-exe" class="path-select-btn action-btn">Browse...</button></div></div>
               <div><label class="block mb-2">Downloads Folder (.step)</label><div class="flex space-x-2"><input type="text" id="setting-downloads" class="form-input flex-grow"><button data-path-for="setting-downloads" data-dialog="directory" class="path-select-btn action-btn">Browse...</button></div></div>
             </div>
           </div>
@@ -614,7 +614,11 @@ export function initializeSettingsPanel(rootElement) {
         selectedPath = await window.electronAPI.selectDirectory();
       } else {
         const filters = [];
-        if (dialogType === 'file-exe') filters.push({ name: 'Executable', extensions: ['exe'] });
+        // Les exécutables n'ont une extension que sous Windows : filtrer sur
+        // 'exe' ailleurs masquerait le binaire que l'utilisateur cherche.
+        if (dialogType === 'file-exe' && window.electronAPI.platform === 'win32') {
+          filters.push({ name: 'Executable', extensions: ['exe'] });
+        }
         filters.push({ name: 'All Files', extensions: ['*'] });
         selectedPath = await window.electronAPI.selectFile({ filters });
       }

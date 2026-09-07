@@ -3464,6 +3464,15 @@ function bemCfdRemedy(env) {
           + `${escapeHtml(env.reason || '')}\nReinstall the application — this is a packaging fault, not a missing dependency.`,
       };
     case 'no-wsl':
+      // Hors Windows, WSL ne peut pas exister : proposer `wsl --install` y
+      // enverrait l'utilisateur exécuter une commande qui n'existe pas.
+      if (window.electronAPI?.platform !== 'win32') {
+        return {
+          html: '<span class="-warn">The vent CFD pipeline requires Windows.</span>\n'
+            + 'It runs OpenFOAM inside WSL, which is only available on Windows 10/11. '
+            + 'Every other module of the application works on this platform.',
+        };
+      }
       return {
         html: '<span class="-warn">WSL is not available on this machine.</span>\n'
           + 'WSL ships with Windows 10/11 but has to be enabled once, from a terminal opened '

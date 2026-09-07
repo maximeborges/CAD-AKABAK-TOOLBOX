@@ -6,6 +6,11 @@ const { contextBridge, ipcRenderer } = require('electron');
 console.log('[PRELOAD] Starting preload.js execution...');
 
 contextBridge.exposeInMainWorld('electronAPI', {
+  // Plateforme hôte ('win32' | 'linux' | 'darwin'). Exposée en valeur et non en
+  // fonction IPC : le renderer en a besoin de façon synchrone pour adapter les
+  // libellés et les filtres de fichiers (ex. gmsh.exe uniquement sous Windows).
+  platform: process.platform,
+
   // --- [CORRECTION CRITIQUE] On expose les handlers IPC, pas les fonctions Node directes ---
   joinPath: (...args) => ipcRenderer.invoke('path:join', ...args),
   isPathAbsolute: (p) => ipcRenderer.invoke('path:is-absolute', p),

@@ -69,11 +69,19 @@ function decodeWslOutput(buf) {
 
 /**
  * Convertit un chemin Windows absolu en chemin WSL (/mnt/<lettre>/...).
+ *
+ * On résout via `path.win32` et non `path.resolve` : la sémantique de ce
+ * dernier dépend de la plateforme hôte, si bien qu'un chemin Windows valide
+ * était rejeté dès que le code tournait ailleurs que sous Windows (les `\`
+ * n'y sont pas des séparateurs). Sous Windows les deux sont identiques, donc
+ * le comportement en production est inchangé — mais la fonction devient
+ * vérifiable depuis Linux et macOS.
+ *
  * @param {string} winPath
  * @returns {string}
  */
 function toWslPath(winPath) {
-    const abs = path.resolve(winPath);
+    const abs = path.win32.resolve(winPath);
     const match = /^([A-Za-z]):[\\/](.*)$/.exec(abs);
     if (!match) {
         throw new Error(`Chemin Windows absolu attendu, reçu: ${winPath}`);

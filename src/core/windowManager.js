@@ -10,6 +10,22 @@ const { getSettings } = require('./settings');
 let mainWindow = null;
 
 /**
+ * Icône de fenêtre adaptée à la plateforme.
+ *
+ * Chromium ne sait décoder le format .ico que sous Windows : ailleurs
+ * `nativeImage` renvoie une image vide (0x0) et la fenêtre retombe sur l'icône
+ * Electron par défaut. On sert donc un PNG sous Linux et macOS.
+ *
+ * Note : le PNG doit vivre dans `src/`, car seul `src/**` est empaqueté
+ * (voir le champ `build.files` du package.json) — `build/icon.png` n'existe
+ * pas dans l'application installée.
+ */
+const WINDOW_ICON = path.join(
+    __dirname, '..', 'assets', 'icon',
+    process.platform === 'win32' ? 'icon.ico' : 'icon.png'
+);
+
+/**
  * Crée la fenêtre principale de l'application.
  * @returns {BrowserWindow} L'instance de la fenêtre principale.
  */
@@ -23,7 +39,7 @@ function createMainWindow() {
         transparent: false,
         hasShadow: true,
         show: false,
-        icon: path.join(__dirname, '..', 'assets', 'icon', 'icon.ico'),
+        icon: WINDOW_ICON,
         webPreferences: {
             // Le chemin du preload est maintenant relatif à la racine (src)
             preload: path.join(__dirname, '..', 'preload.js'),
@@ -63,7 +79,7 @@ function createSplashWindow() {
         transparent: true,
         alwaysOnTop: true,
         center: true,
-        icon: path.join(__dirname, '..', 'assets', 'icon', 'icon.ico')
+        icon: WINDOW_ICON
     });
     splashWindow.loadFile(path.join(__dirname, '..', 'splash.html'));
     return splashWindow;
@@ -105,7 +121,7 @@ function createToolWindow({ toolName, title }) {
         frame: false, // Contrôles personnalisés pour tous les popups
         alwaysOnTop: appSettings.popupsAlwaysOnTop,
         resizable: true,
-        icon: path.join(__dirname, '..', 'assets', 'icon', 'icon.ico'),
+        icon: WINDOW_ICON,
         webPreferences: {
             preload: path.join(__dirname, '..', 'preload.js'),
             // Argument pour dire au renderer quel outil charger
