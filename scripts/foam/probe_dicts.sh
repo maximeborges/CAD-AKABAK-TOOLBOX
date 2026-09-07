@@ -2,12 +2,10 @@
 # Relève la syntaxe exacte des dictionnaires de la version OpenFOAM installée,
 # plutôt que de se fier à une syntaxe mémorisée qui varie entre versions.
 
-FOAM_BASHRC=""
-for d in /usr/lib/openfoam/openfoam*; do
-  [ -f "$d/etc/bashrc" ] && FOAM_BASHRC="$d/etc/bashrc"
-done
-# shellcheck disable=SC1090
-. "$FOAM_BASHRC" 2>/dev/null
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=find_foam.sh
+. "$SCRIPT_DIR/find_foam.sh"
+foam_setup || { echo "FOAM_ERROR=OpenFOAM introuvable"; exit 1; }
 
 echo "=== constant/ et system/ d'un cas pimpleFoam RAS ==="
 find "$FOAM_TUTORIALS/incompressible/pimpleFoam/RAS/pitzDaily" -type f | sed "s|$FOAM_TUTORIALS/incompressible/pimpleFoam/RAS/pitzDaily/||" | sort

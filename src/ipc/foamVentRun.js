@@ -102,7 +102,7 @@ async function runVentCase(spec, options) {
     let solveStart = 0;
     let endTime = info.endTime_s || 0;
     const res = await foam.runFoamScriptStream(env.distro, 'run_case.sh',
-        [foam.toWslPath(caseDir), stage, String(spec.cores || 8), spec.endTimeOverride || ''],
+        [foam.toScriptPath(caseDir), stage, String(spec.cores || 8), spec.endTimeOverride || ''],
         {
             timeout: options.timeout || 6 * 60 * 60 * 1000,
             signal,

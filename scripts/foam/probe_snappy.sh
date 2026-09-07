@@ -2,12 +2,10 @@
 # Affiche les dictionnaires de reference du cas motorBike (exemple canonique
 # de snappyHexMesh) pour caler la syntaxe exacte de la version installee.
 
-FOAM_BASHRC=""
-for d in /usr/lib/openfoam/openfoam*; do
-  [ -f "$d/etc/bashrc" ] && FOAM_BASHRC="$d/etc/bashrc"
-done
-# shellcheck disable=SC1090
-. "$FOAM_BASHRC" 2>/dev/null
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=find_foam.sh
+. "$SCRIPT_DIR/find_foam.sh"
+foam_setup || { echo "FOAM_ERROR=OpenFOAM introuvable"; exit 1; }
 
 MB="$FOAM_TUTORIALS/incompressible/pisoFoam/LES/motorBike/motorBike"
 

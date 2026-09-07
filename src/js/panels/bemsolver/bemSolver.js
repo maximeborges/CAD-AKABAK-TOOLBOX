@@ -3455,8 +3455,10 @@ function bemCfdRemedy(env) {
     case 'ok':
       return {
         ok: true,
-        html: `<span class="-ok">Ready.</span> OpenFOAM ${escapeHtml(env.version || '?')} in `
-          + `${escapeHtml(env.distro)} · ${env.cores || '?'} cores.`,
+        // Sur un hôte natif il n'y a pas de distribution WSL à nommer.
+        html: `<span class="-ok">Ready.</span> OpenFOAM ${escapeHtml(env.version || '?')}`
+          + (env.native ? '' : ` in ${escapeHtml(env.distro)}`)
+          + ` · ${env.cores || '?'} cores.`,
       };
     case 'no-scripts':
       return {
@@ -3464,14 +3466,12 @@ function bemCfdRemedy(env) {
           + `${escapeHtml(env.reason || '')}\nReinstall the application — this is a packaging fault, not a missing dependency.`,
       };
     case 'no-wsl':
-      // Hors Windows, WSL ne peut pas exister : proposer `wsl --install` y
-      // enverrait l'utilisateur exécuter une commande qui n'existe pas.
+      // Le backend ne renvoie plus ce stade hors Windows (Linux tourne en natif,
+      // les autres plateformes renvoient 'unsupported-platform'). Le garde-fou
+      // reste : proposer `wsl --install` ailleurs enverrait l'utilisateur
+      // exécuter une commande qui n'existe pas.
       if (window.electronAPI?.platform !== 'win32') {
-        return {
-          html: '<span class="-warn">The vent CFD pipeline requires Windows.</span>\n'
-            + 'It runs OpenFOAM inside WSL, which is only available on Windows 10/11. '
-            + 'Every other module of the application works on this platform.',
-        };
+        return bemCfdRemedy({ ...env, stage: 'unsupported-platform' });
       }
       return {
         html: '<span class="-warn">WSL is not available on this machine.</span>\n'
@@ -3485,14 +3485,36 @@ function bemCfdRemedy(env) {
           + 'Run this once in a terminal, let it finish, then come back and press Re-check.',
         command: BEM_WSL_INSTALL_CMD,
       };
+    case 'unsupported-platform':
+      return {
+        html: '<span class="-warn">The vent CFD pipeline is not available on this platform.</span>\n'
+          + 'It needs OpenFOAM, which runs natively on Linux and through WSL on '
+          + 'Windows. Every other module works here.',
+      };
     case 'no-openfoam':
-    case 'missing-tools':
+    case 'missing-tools': {
+      const missing = env.missing?.length
+        ? `\nMissing tools: ${escapeHtml(env.missing.join(', '))}`
+        : '';
+      // On a Linux host we must not offer the in-app installer: it adds the
+      // openfoam.com apt repository and installs as root, which is fine in the
+      // Ubuntu image the CFD setup owns but not on the user's own machine.
+      if (env.native) {
+        return {
+          html: '<span class="-warn">OpenFOAM was not found on this machine.</span>\n'
+            + 'Install it with your distribution\'s package manager (the '
+            + '<b>openfoam</b> package), then press Re-check. If it lives somewhere '
+            + 'unusual, set <b>FOAM_BASHRC</b> to its <code>etc/bashrc</code>.'
+            + missing,
+        };
+      }
       return {
         html: `<span class="-warn">OpenFOAM is missing from ${escapeHtml(env.distro || 'the distribution')}.</span>\n`
           + 'It can be installed from here: about 1 GB of download, no administrator rights needed.'
-          + (env.missing?.length ? `\nMissing tools: ${escapeHtml(env.missing.join(', '))}` : ''),
+          + missing,
         install: true,
       };
+    }
     default:
       return { html: escapeHtml(env?.reason || 'CFD backend unavailable.') };
   }

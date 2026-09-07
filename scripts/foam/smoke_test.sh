@@ -2,14 +2,13 @@
 # End-to-end smoke test: mesh + solve a small tutorial case to prove the
 # OpenFOAM install actually computes, not just that the binaries exist.
 
-FOAM_BASHRC=""
-for d in /usr/lib/openfoam/openfoam*; do
-  [ -f "$d/etc/bashrc" ] && FOAM_BASHRC="$d/etc/bashrc"
-done
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=find_foam.sh
+. "$SCRIPT_DIR/find_foam.sh"
+
 # Sourcing must happen before `set -e`: OpenFOAM's config.sh emits a harmless
 # "pop_var_context" warning under bash 5.2 that would abort a strict shell.
-# shellcheck disable=SC1090
-. "$FOAM_BASHRC" 2>/dev/null
+foam_setup || { echo "FOAM_ERROR=OpenFOAM introuvable"; exit 1; }
 
 set -e
 

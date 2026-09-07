@@ -2,18 +2,14 @@
 # Probe the OpenFOAM environment inside WSL and report what the Toolbox CFD
 # backend can rely on. Prints KEY=VALUE lines so the Node side can parse it.
 
-FOAM_BASHRC=""
-for d in /usr/lib/openfoam/openfoam*; do
-  [ -f "$d/etc/bashrc" ] && FOAM_BASHRC="$d/etc/bashrc"
-done
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=find_foam.sh
+. "$SCRIPT_DIR/find_foam.sh"
 
-if [ -z "$FOAM_BASHRC" ]; then
+if ! foam_setup; then
   echo "FOAM_FOUND=0"
   exit 1
 fi
-
-# shellcheck disable=SC1090
-. "$FOAM_BASHRC"
 
 echo "FOAM_FOUND=1"
 echo "FOAM_BASHRC=$FOAM_BASHRC"

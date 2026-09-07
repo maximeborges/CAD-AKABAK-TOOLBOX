@@ -14,17 +14,15 @@ STAGE="${2:-all}"
 CORES="${3:-1}"
 END_OVERRIDE="${4:-}"
 
-FOAM_BASHRC=""
-for d in /usr/lib/openfoam/openfoam*; do
-  [ -f "$d/etc/bashrc" ] && FOAM_BASHRC="$d/etc/bashrc"
-done
-if [ -z "$FOAM_BASHRC" ]; then
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=find_foam.sh
+. "$SCRIPT_DIR/find_foam.sh"
+
+# Sourcer avant `set -e`: config.sh emet un avertissement bash 5.2 inoffensif.
+if ! foam_setup; then
   echo "FOAM_ERROR=OpenFOAM introuvable"
   exit 1
 fi
-# Sourcer avant `set -e`: config.sh emet un avertissement bash 5.2 inoffensif.
-# shellcheck disable=SC1090
-. "$FOAM_BASHRC" 2>/dev/null
 
 set -e
 cd "$CASE_DIR" || { echo "FOAM_ERROR=cas introuvable: $CASE_DIR"; exit 1; }
