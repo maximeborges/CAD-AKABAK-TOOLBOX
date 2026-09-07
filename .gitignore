@@ -1,15 +1,17 @@
-// tout est ignoré
+# Ce qui est ignoré
 
 node_modules
 dist
-package-lock.json
 .DS_Store
 .env
 .vscode
-build
 .claude
 .foam-work
-.github
+
+# La CI et les ressources d'icônes (build/) doivent être versionnées :
+# electron-builder lit build/icon.* et GitHub Actions lit .github/workflows.
+!.github
+!build
 
       # Données sensibles et confidentielles - Dossier centralisé
 private/

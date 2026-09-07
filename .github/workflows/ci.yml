@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Une seule exécution par branche : un nouveau push annule le build en cours.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Linux
+            target: --linux
+          - os: windows-latest
+            name: Windows
+            target: --win
+          - os: macos-latest
+            name: macOS
+            target: --mac
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Syntax check
+        run: node --check src/main.js && node --check src/preload.js
+
+      - name: Package application
+        run: npx electron-builder ${{ matrix.target }} --publish never
+        env:
+          # Pas de certificat Apple dans la CI : on empêche electron-builder de
+          # chercher une identité de signature, sinon le build macOS échoue.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-${{ matrix.name }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            dist/*.AppImage
+            dist/*.exe
+            dist/*.dmg

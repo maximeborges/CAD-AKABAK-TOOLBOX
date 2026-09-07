@@ -2,11 +2,16 @@
   "name": "cad-akabak-toolbox",
   "version": "3.0.1",
   "description": "Toolbox for CAD & AKBAk",
+  "author": "SZSLAB",
   "main": "src/main.js",
+  "desktopName": "cad-akabak-toolbox.desktop",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
-    "version": "node docs/version-manager.js",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "version:manager": "node docs/version-manager.js",
     "version:update": "node docs/version-manager.js update",
     "version:tag": "node docs/version-manager.js tag",
     "version:changelog": "node docs/version-manager.js changelog",
@@ -49,17 +54,54 @@
       "buildResources": "build",
       "output": "dist"
     },
+    "artifactName": "CAD-Akabak-Toolbox-${version}-${os}-${arch}.${ext}",
+    "publish": [
+      {
+        "provider": "github",
+        "releaseType": "release"
+      }
+    ],
     "win": {
-      "target": "nsis",
-      "icon": "src/assets/icon/icon.ico"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     },
     "mac": {
-      "target": "dmg",
-      "icon": "build/icon.icns"
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.graphics-design"
     },
     "linux": {
-      "target": "AppImage",
-      "icon": "build/icon.png"
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "Graphics",
+      "synopsis": "Toolbox for CAD & AKABAK",
+      "syncDesktopName": true
     }
   }
 }
