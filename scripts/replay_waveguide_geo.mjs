@@ -5,10 +5,11 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { generateGeoForSTEPLoft } from '../src/js/panels/waveguidestudio/exporters.js';
+import { resolveGmsh } from './lib/env_paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const geoPath = process.argv[2];
-const gmshPath = process.argv[3] || 'C:\\Program Files\\gmsh-4.15.0-Windows64\\gmsh-4.15.0-Windows64\\gmsh.exe';
+const gmshPath = resolveGmsh(process.argv[3]);
 if (!geoPath) { console.error('usage: node scripts/replay_waveguide_geo.mjs <debug_loft.geo> [gmsh.exe]'); process.exit(1); }
 
 const src = fs.readFileSync(geoPath, 'utf8');

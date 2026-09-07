@@ -2,6 +2,10 @@
 import { readFileSync } from 'node:fs';
 
 const path = process.argv[2];
+if (!path) {
+    console.error('Usage: node scripts/msh_inspect.mjs <mesh.msh>');
+    process.exit(2);
+}
 const txt = readFileSync(path, 'utf8');
 const lines = txt.split('\n').map(l => l.trim()).filter(Boolean);
 

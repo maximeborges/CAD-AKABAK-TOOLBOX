@@ -11,6 +11,7 @@ import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { buildConfigFromStudy } from './lib/tbbs_config.mjs';
+import { resolveDataFile } from './lib/env_paths.mjs';
 
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -28,7 +29,7 @@ function check(label, condition, detail = '') {
     console.log(`  ${condition ? 'PASS' : 'FAIL'}  ${label}${detail ? `  —  ${detail}` : ''}`);
 }
 
-const study = JSON.parse(fs.readFileSync(path.join(repo, 'DEV-BEM', '8br40.TBBS'), 'utf8'));
+const study = JSON.parse(fs.readFileSync(resolveDataFile('DEV-BEM/8br40.TBBS', { explicit: process.argv[2] }), 'utf8'));
 const volts = VOLTS;
 
 const { buildFieldGeometry } = new Function(

@@ -4,8 +4,14 @@
 //            Génère un .msh, lance le solveur, compare avec Akabak
 // =======================================================
 
-import { MultiDomainBEMSolver, generatePolarPlotData, generateContourPlotData } from './src/js/bem/bemMultiDomainBackend.js';
-import { createPolarPlot, createContourPlot } from './src/js/bem/bemMultiDomainVisualizer.js';
+import { MultiDomainBEMSolver, generatePolarPlotData, generateContourPlotData } from '../src/js/bem/bemMultiDomainBackend.js';
+import { createPolarPlot, createContourPlot } from '../src/js/bem/bemMultiDomainVisualizer.js';
+
+// Ancré sur la racine du dépôt : le script restait sinon dépendant du dossier
+// depuis lequel on l'invoquait.
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+const TEST_DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'test_data');
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -15,7 +21,7 @@ import * as path from 'path';
 async function testParseMSH() {
   console.log('\n=== Test 1: Parse MSH File ===');
   
-  const mshPath = './test_data/waveguide_default.msh';
+  const mshPath = join(TEST_DATA_DIR, 'waveguide_default.msh');
   
   if (!fs.existsSync(mshPath)) {
     console.error(`❌ MSH file not found: ${mshPath}`);
@@ -33,7 +39,7 @@ async function testParseMSH() {
   
   try {
     // Import the parser directly
-    const { parseMSH } = await import('./src/js/bem/bemMultiDomainCore.js');
+    const { parseMSH } = await import('../src/js/bem/bemMultiDomainCore.js');
     const meshData = parseMSH(mshContent);
     
     console.log(`✓ Nodes: ${meshData.numNodes}`);
@@ -152,7 +158,7 @@ async function testAkabakComparison(bemResult) {
   }
   
   // Try to load Akabak reference data
-  const akabakPath = './test_data/akabak_reference_2000hz.csv';
+  const akabakPath = join(TEST_DATA_DIR, 'akabak_reference_2000hz.csv');
   
   if (!fs.existsSync(akabakPath)) {
     console.log('⚠ Akabak reference data not found');
@@ -277,8 +283,8 @@ async function runAllTests() {
   console.log('╚═══════════════════════════════════════════╝');
   
   // Create test_data directory if it doesn't exist
-  if (!fs.existsSync('./test_data')) {
-    fs.mkdirSync('./test_data');
+  if (!fs.existsSync(TEST_DATA_DIR)) {
+    fs.mkdirSync(TEST_DATA_DIR);
   }
   
   // Run tests

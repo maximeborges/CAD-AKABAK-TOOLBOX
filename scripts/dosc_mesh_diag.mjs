@@ -12,9 +12,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { resolveGmsh } from './lib/env_paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const GMSH = 'C:\\Program Files\\gmsh-4.15.0-Windows64\\gmsh-4.15.0-Windows64\\gmsh.exe';
+const GMSH = resolveGmsh();
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const k = argv.indexOf(n); return k >= 0 ? argv[k + 1] : d; };
 const GEO = opt('--geo', path.join(__dirname, 'out', 'dosc_diag', 'numLines_48.geo'));

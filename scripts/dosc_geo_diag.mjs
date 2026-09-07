@@ -15,12 +15,13 @@ import { fileURLToPath } from 'node:url';
 
 import { generateDosc, stackToSlices } from '../src/js/panels/waveguidestudio/dosc/doscGenerator.js';
 import { generateGeoForDoscLoft } from '../src/js/panels/waveguidestudio/exporters.js';
+import { resolveGmsh } from './lib/env_paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(__dirname, 'out', 'dosc_diag');
 fs.mkdirSync(OUT, { recursive: true });
 
-const GMSH = 'C:\\Program Files\\gmsh-4.15.0-Windows64\\gmsh-4.15.0-Windows64\\gmsh.exe';
+const GMSH = resolveGmsh();
 const argv = process.argv.slice(2);
 const budgetMs = 1000 * (argv.includes('--budget') ? Number(argv[argv.indexOf('--budget') + 1]) : 30);
 

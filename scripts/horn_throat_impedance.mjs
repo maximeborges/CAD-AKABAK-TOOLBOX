@@ -13,10 +13,11 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
+import { resolveDataFile } from './lib/env_paths.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');
-const study = JSON.parse(readFileSync(process.argv[2] || join(root, 'AKABAK CURVES', 'horn.TBBS'), 'utf8'));
+const study = JSON.parse(readFileSync(resolveDataFile('AKABAK CURVES/horn.TBBS', { explicit: process.argv[2] }), 'utf8'));
 
 const C = 344, RHO = 1.21;
 

@@ -16,6 +16,10 @@ const api = vm.runInContext(`({
   computeMultiDomainPolar, multiDomainPowerBalance, pickRadiatingDomain, C_AIR,
 })`, context);
 
+if (!process.argv[2]) {
+    console.error('Usage: node scripts/bem_domain_debug.mjs <mesh.msh>');
+    process.exit(2);
+}
 const mesh = readFileSync(process.argv[2], 'utf8');
 
 // Configuration reproduisant l'arbre Akabak de l'utilisateur.

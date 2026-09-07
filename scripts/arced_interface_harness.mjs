@@ -8,10 +8,11 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { generateGeoForSTEPLoft } from '../src/js/panels/waveguidestudio/exporters.js';
+import { resolveGmsh } from './lib/env_paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.join(__dirname, 'out', 'arced_interface');
-const gmshPath = process.argv[2] || 'C:\\Program Files\\gmsh-4.15.0-Windows64\\gmsh-4.15.0-Windows64\\gmsh.exe';
+const gmshPath = resolveGmsh(process.argv[2]);
 
 const ring = (radius, z, bend = 0, split = null, n = 24) => {
     const pts = [];

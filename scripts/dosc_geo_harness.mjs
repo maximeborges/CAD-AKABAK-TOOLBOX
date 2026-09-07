@@ -12,7 +12,7 @@
 //
 // Usage (depuis la racine du repo) :
 //   node scripts/dosc_geo_harness.mjs
-//   node scripts/dosc_geo_harness.mjs --gmsh "C:\\chemin\\gmsh.exe"
+//   node scripts/dosc_geo_harness.mjs --gmsh /chemin/vers/gmsh   (sinon: $GMSH, puis "gmsh" dans le PATH)
 //   node scripts/dosc_geo_harness.mjs --geo-only     # n'exécute pas gmsh
 //   node scripts/dosc_geo_harness.mjs --clmax 8 --curv 8
 //
@@ -26,6 +26,7 @@ import { fileURLToPath } from 'node:url';
 
 import { generateDosc, stackToSlices } from '../src/js/panels/waveguidestudio/dosc/doscGenerator.js';
 import { generateGeoForDoscLoft } from '../src/js/panels/waveguidestudio/exporters.js';
+import { resolveGmsh } from './lib/env_paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = path.join(__dirname, 'out', 'dosc_export');
@@ -35,7 +36,7 @@ const flag = (n) => argv.includes(n);
 const opt = (n, d) => { const k = argv.indexOf(n); return k >= 0 && argv[k + 1] != null ? argv[k + 1] : d; };
 const num = (n, d) => { const v = Number(opt(n, d)); return Number.isFinite(v) ? v : d; };
 
-const GMSH = opt('--gmsh', 'C:\\Program Files\\gmsh-4.15.0-Windows64\\gmsh.exe');
+const GMSH = resolveGmsh(opt('--gmsh'));
 const CLMAX = num('--clmax', 10);
 const CURV = num('--curv', 5);
 

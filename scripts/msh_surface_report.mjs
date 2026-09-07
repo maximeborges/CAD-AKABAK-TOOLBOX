@@ -1,7 +1,8 @@
 // Inventaire des surfaces d'un .msh : nombre de triangles, aire, boîte englobante.
 import { readFileSync } from 'node:fs';
+import { resolveDataFile } from './lib/env_paths.mjs';
 
-const study = JSON.parse(readFileSync(process.argv[2] || 'AKABAK CURVES/horn.TBBS', 'utf8'));
+const study = JSON.parse(readFileSync(resolveDataFile('AKABAK CURVES/horn.TBBS', { explicit: process.argv[2] }), 'utf8'));
 const msh = study.mesh || readFileSync(process.argv[2], 'utf8');
 
 const names = new Map();

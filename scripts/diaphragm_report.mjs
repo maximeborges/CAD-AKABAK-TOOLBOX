@@ -1,12 +1,16 @@
 // Inspecte le maillage de diaphragme généré pour une étude .TBBS.
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { resolveDataFile, repoRoot } from './lib/env_paths.mjs';
 
+// Résolu depuis la racine du dépôt et non depuis le cwd : le harnais reste
+// exécutable depuis n'importe quel dossier.
 const { buildDiaphragmMesh } = new Function(
-  `${readFileSync('src/js/panels/bemsolver/diaphragmMesh.js', 'utf8').replace(/^export function/gm, 'function')}
+  `${readFileSync(join(repoRoot, 'src/js/panels/bemsolver/diaphragmMesh.js'), 'utf8').replace(/^export function/gm, 'function')}
    return { buildDiaphragmMesh };`
 )();
 
-const study = JSON.parse(readFileSync(process.argv[2] || 'AKABAK CURVES/horn.TBBS', 'utf8'));
+const study = JSON.parse(readFileSync(resolveDataFile('AKABAK CURVES/horn.TBBS', { explicit: process.argv[2] }), 'utf8'));
 const hv = [];
 for (const l of study.mesh.split('$Nodes')[1].split('$EndNodes')[0].trim().split('\n').slice(1)) {
   const f = l.trim().split(/\s+/).map(Number);

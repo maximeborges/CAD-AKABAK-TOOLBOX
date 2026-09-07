@@ -13,11 +13,12 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
 import { buildConfigFromStudy } from './lib/tbbs_config.mjs';
+import { resolveDataFile } from './lib/env_paths.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');
 
-const studyPath = process.argv[2] || join(root, 'AKABAK CURVES', 'ESW1018.TBBS');
+const studyPath = resolveDataFile('AKABAK CURVES/ESW1018.TBBS', { explicit: process.argv[2] });
 const freqs = (process.argv[3] || '30,45,63,100').split(',').map(Number);
 const study = JSON.parse(readFileSync(studyPath, 'utf8'));
 const { config } = buildConfigFromStudy(study, study.mesh);

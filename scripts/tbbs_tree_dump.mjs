@@ -2,6 +2,10 @@
 import fs from 'node:fs';
 
 const file = process.argv[2];
+if (!file) {
+    console.error('Usage: node scripts/tbbs_tree_dump.mjs <projet.TBBS>');
+    process.exit(2);
+}
 const project = JSON.parse(fs.readFileSync(file, 'utf8'));
 
 console.log('meshFileName :', project.meshFileName);

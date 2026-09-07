@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { resolveDataFile } from './lib/env_paths.mjs';
 
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -38,7 +39,7 @@ const probePoints_mm = axisZ.map(z => [0, -185, z]);
 for (let z = -155; z <= 20; z += 25) probePoints_mm.push([0, -178, z]);
 
 console.log(`=== Génération du cas (${quality}) ===`);
-const project = JSON.parse(fs.readFileSync(path.join(repo, 'DEV-BEM', '8br40.TBBS'), 'utf8'));
+const project = JSON.parse(fs.readFileSync(resolveDataFile('DEV-BEM/8br40.TBBS', { explicit: process.argv[2] }), 'utf8'));
 const built = foamCase.buildCase({
     mshContent: project.mesh,
     groups: { wall: ['p:3'], inlet: ['p:1'], outlet: ['p:5'] },

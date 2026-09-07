@@ -8,13 +8,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { resolveDataFile } from './lib/env_paths.mjs';
 
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.join(here, '..');
 const foamCase = require(path.join(repo, 'src', 'ipc', 'foamCase.js'));
 
-const projectPath = process.argv[2] || path.join(repo, 'DEV-BEM', '8br40.TBBS');
+const projectPath = resolveDataFile('DEV-BEM/8br40.TBBS', { explicit: process.argv[2] });
 
 let failures = 0;
 function check(label, condition, detail = '') {

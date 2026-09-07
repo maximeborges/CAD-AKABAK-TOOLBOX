@@ -8,7 +8,7 @@
 //
 // USAGE :
 //   node scripts/dosc_brep_harness.mjs
-//   node scripts/dosc_brep_harness.mjs --gmsh "C:\\chemin\\gmsh.exe"
+//   node scripts/dosc_brep_harness.mjs --gmsh /chemin/vers/gmsh   (sinon: $GMSH, puis "gmsh" dans le PATH)
 //   node scripts/dosc_brep_harness.mjs --geo-only
 // ====================================================================================================
 
@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 import { deriveDoscParams, maxDoscFilletRadius, generateDosc, computeIsophaseReport } from '../src/js/panels/waveguidestudio/dosc/doscGenerator.js';
 import { generateGeoForDoscBRep } from '../src/js/panels/waveguidestudio/dosc/doscBrep.js';
+import { resolveGmsh } from './lib/env_paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(__dirname, 'out', 'dosc_brep');
@@ -30,7 +31,7 @@ const opt = (flag, dflt) => {
     return k >= 0 && argv[k + 1] ? argv[k + 1] : dflt;
 };
 const GEO_ONLY = argv.includes('--geo-only');
-const GMSH = opt('--gmsh', 'C:\\Program Files\\gmsh-4.15.0-Windows64\\gmsh-4.15.0-Windows64\\gmsh.exe');
+const GMSH = resolveGmsh(opt('--gmsh'));
 
 let failures = 0;
 const check = (label, ok, detail = '') => {
