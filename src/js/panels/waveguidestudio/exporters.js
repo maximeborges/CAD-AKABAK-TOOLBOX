@@ -1873,6 +1873,13 @@ export function generateGeoForDoscLoft(shellSlices, bodySlices, buildInterface, 
 
     // ===== Physical Surfaces + mesh sizing =====
     if (meshConfig) {
+        // Les autres exportateurs normalisent en amont, mais cette fonction est
+        // aussi appelée directement (harnais, anciens appels) avec la forme
+        // « plate » historique { clmax, curvature } — dépourvue des profils
+        // source/horn/interface lus plus bas. `normalizeMeshConfig` gère
+        // explicitement cette forme et est idempotent sur une config déjà
+        // normalisée : l'appliquer ici ne change rien pour l'application.
+        meshConfig = normalizeMeshConfig(meshConfig);
         lines.push('// --- Physical Surfaces for BEM ---');
         const groups = [];
         groups.push({

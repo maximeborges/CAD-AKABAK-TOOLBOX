@@ -65,7 +65,9 @@ export class MultiDomainBEMSolver {
    * @returns {Promise} Resolves with results
    */
   async solveMSH(mshContent, options = {}) {
-    ifawait this.initWorker(
+    if (!this.worker) {
+      await this.initWorker();
+      // Laisse le worker s'installer avant le premier postMessage.
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     
